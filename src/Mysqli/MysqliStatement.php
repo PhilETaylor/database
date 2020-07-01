@@ -8,6 +8,7 @@
 
 namespace Joomla\Database\Mysqli;
 
+use Joomla\Database\Exception\ConnectionFailureException;
 use Joomla\Database\Exception\ExecutionFailureException;
 use Joomla\Database\Exception\PrepareStatementFailureException;
 use Joomla\Database\FetchMode;
@@ -131,6 +132,11 @@ class MysqliStatement implements StatementInterface
 	{
 		$this->connection   = $connection;
 		$this->query        = $query;
+
+		if ($this->connection->connect_errno)
+		{
+			throw new ConnectionFailureException($this->connection->error, $this->connection->errno);
+		}
 
 		$query = $this->prepareParameterKeyMapping($query);
 
